@@ -9,14 +9,14 @@
   },
   "AmountOfCandy": {
     "type": "textbox",
-    "value": "",
+    "value": "1",
     "label": "CanyJarAmount",
     "tooltip": "can only take so many",
     "group": "Candy Jar"
   },
   "Storage": {
     "type": "textbox",
-    "value": "{'ignore':'this'}",
+    "value": "{}",
     "label": "Storage",
     "tooltip": "no bad touch pls",
     "group": "Candy Jar"

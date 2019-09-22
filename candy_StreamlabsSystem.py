@@ -11,13 +11,14 @@ import re
 ScriptName = "candyjar" #Change this
 Website = "https://www.twitch.tv/Timmah_TV"
 Creator = "Timmah_TV"
-Version = "1.0.0"
-Description = "can only grab x candy or else purged lmao"
+Version = "1.1.0"
+Description = "can only grab x candy globally or else purged lmao"
 #---------------------------------------
 # Versions
 #---------------------------------------
 """
 1.0.0 - Initial Release
+1.1.0 - Add global counter to candy.
 """
 #---------------------------------------
 # Variables
@@ -39,7 +40,7 @@ class Settings:
             self.Command = "command" #Change this
             self.ResponseMessage = "Response Message" #Change this
             self.ErrorMessage = "Error Message" #Change this
-            self.Storage = '{"ignore":"this"}' #Change this
+            self.Storage = '{}' #Change this
             self.AmountOfCandy = "1" #Change this
 
     # Reload settings on save through UI
@@ -89,30 +90,41 @@ def Init():
 
 def Execute(data):
     if data.IsChatMessage():
-        if data.IsFromTwitch():
-            if data.GetParam(0).lower() == Command: #Change this
-                jsonstorage = json.loads(MySettings.Storage)
-                storeCandy(jsonstorage, data.UserName)
-                maxCandyAmount = int(MySettings.AmountOfCandy)
-                yourCandyAmount = int(jsonstorage[data.UserName])
-                if(yourCandyAmount > maxCandyAmount):
-                    Parent.SendTwitchMessage("/timeout " + data.UserName + " 1")
-                    Parent.SendTwitchMessage("moon2A Too much candy dude")
-                else:
-                    Parent.SendTwitchMessage("monkaS Don't take too much now")
-                MySettings.Storage = json.dumps(jsonstorage)
-        elif data.IsFromDiscord():
-            if data.GetParam(0).lower() == Command: #Change this
-                jsonstorage = json.loads(MySettings.Storage)
-                storeCandy(jsonstorage, data.UserName)
-                maxCandyAmount = int(MySettings.AmountOfCandy)
-                yourCandyAmount = int(jsonstorage[data.UserName])
-                if(yourCandyAmount > maxCandyAmount):
-                    Parent.SendTwitchMessage("/timeout " + data.UserName + " 1")
-                    Parent.SendTwitchMessage("moon2A Too much candy dude")
-                else:
-                    Parent.SendTwitchMessage("monkaS Don't take too much now")
-                MySettings.Storage = json.dumps(jsonstorage)
+
+        # Determine if twitch message or discord message
+        SendMessage = Parent.SendTwitchMessage if data.IsFromTwitch() else Parent.SendDiscordMessage
+
+        # Check for command
+        if data.GetParam(0).lower() == Command: #Change this
+        
+            # load current candy count from storage
+            jsonstorage = json.loads(MySettings.Storage)
+
+            # increment candy count or make storage at 1
+            storeCandy(jsonstorage)
+
+            # get max candy count can reach
+            maxCandyAmount = int(MySettings.AmountOfCandy)
+
+            # current amount of candy taken
+            currentCandyAmount = int(jsonstorage["total"])
+
+            # check if current candy taken exceeds max candy that can be taken
+            if(currentCandyAmount > maxCandyAmount):
+
+                # purge and send message if taken the limit
+                SendMessage("/timeout " + data.UserName + " 1")
+                SendMessage("moon2A Too much candy dude")
+
+                # reset the jar
+                jsonstorage["total"] = 0
+            else:
+
+                # Warning message on taking the candy in the first place
+                SendMessage("monkaS Don't take too much now")
+
+            # Store storage back
+            MySettings.Storage = json.dumps(jsonstorage)
         # Where we process the command
     return
 
@@ -122,8 +134,9 @@ def Tick():
     return
 
 
-def storeCandy(candyStorage, user):
+# Store the candy
+def storeCandy(candyStorage):
     try:
-        candyStorage[user] = candyStorage[user] + 1
+        candyStorage["total"] = candyStorage["total"] + 1
     except:
-        candyStorage[user] = 1
+        candyStorage["total"] = 1
