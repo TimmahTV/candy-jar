@@ -1,0 +1,38 @@
+{
+ "output_file": "settings.json",
+  "Command": {
+    "type": "textbox",
+    "value": "!takecandy",
+    "label": "Command",
+    "tooltip": "can only take so many",
+    "group": "Candy Jar"
+  },
+  "AmountOfCandy": {
+    "type": "textbox",
+    "value": "",
+    "label": "CanyJarAmount",
+    "tooltip": "can only take so many",
+    "group": "Candy Jar"
+  },
+  "Storage": {
+    "type": "textbox",
+    "value": "{'ignore':'this'}",
+    "label": "Storage",
+    "tooltip": "no bad touch pls",
+    "group": "Candy Jar"
+  },
+  "ResponseMessage": {
+    "type": "textbox",
+    "value": "the response message sent to chat",
+    "label": "Response",
+    "tooltip": "can only take so many",
+    "group": "Candy Jar"
+  },
+  "ErrorMessage": {
+    "type": "textbox",
+    "value": "Error Message",
+    "label": "Error Response",
+    "tooltip": "can only take so many",
+    "group": "Candy Jar"
+  }
+}
