@@ -96,7 +96,7 @@ def Execute(data):
 
         # Check for command
         if data.GetParam(0).lower() == Command: #Change this
-        
+
             # load current candy count from storage
             jsonstorage = json.loads(MySettings.Storage)
 
@@ -109,19 +109,21 @@ def Execute(data):
             # current amount of candy taken
             currentCandyAmount = int(jsonstorage["total"])
 
-            # check if current candy taken exceeds max candy that can be taken
-            if(currentCandyAmount > maxCandyAmount):
+            result = Parent.GetRandom(currentCandyAmount,maxCandyAmount)
 
+            # check if current candy taken exceeds max candy that can be taken
+            if result == maxCandyAmount - 1:
                 # purge and send message if taken the limit
                 SendMessage("/timeout " + data.UserName + " 1")
-                SendMessage("moon2A Too much candy dude")
+                SendMessage(replaceMessageWithInfoFinale(data.UserName))
 
                 # reset the jar
                 jsonstorage["total"] = 0
+
             else:
 
                 # Warning message on taking the candy in the first place
-                SendMessage("monkaS Don't take too much now")
+                SendMessage(replaceMessageWithInfoNotTooMuch())
 
             # Store storage back
             MySettings.Storage = json.dumps(jsonstorage)
@@ -140,3 +142,38 @@ def storeCandy(candyStorage):
         candyStorage["total"] = candyStorage["total"] + 1
     except:
         candyStorage["total"] = 1
+
+
+def replaceMessageWithInfoFinale(user):
+
+    phrases = [
+        "moon2A Too much candy dude",
+        "What? You want Diabetes? Again?",
+        "omg please make it 'lol you got die-abetes' - PiePlans",
+        "*slaps hand* you've had enough.",
+        "Whoa! don't put your whole fist in there.",
+        "Sugarpig, I said just one",
+        "Wow master, that's to- tOwO much candy wandy. desu~",
+        "XXX exploded in a rain of guts and candy"
+    ]
+
+    result = Parent.GetRandom(0,len(phrases))
+
+    return phrases[result].replace('XXX', user)
+
+
+def replaceMessageWithInfoNotTooMuch():
+
+    phrases = [
+        "Don't get so greedy moon2A",
+        "Someone's trying to get dummy thicc",
+        "monkaS Don't take too much now",
+        "I hope that's all you need :)",
+        "Just take one, sugarpig",
+        "Papa's got a sweet tooth",
+        "Another sweet treat for Papa's thirsty mouf"
+    ]
+
+    result = Parent.GetRandom(0,len(phrases))
+
+    return phrases[result]
